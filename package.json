@@ -1,0 +1,39 @@
+{
+  "name": "@weavedev/jit-env-snowpack-plugin",
+  "version": "0.1.0-alpha",
+  "description": "Injects .env.json files into the web application for development and adds an injection point for just-in-time injection when used in production.",
+  "main": "jitEnvSnowpackPlugin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weavedev/jit-env-snowpack-plugin.git"
+  },
+  "keywords": [
+    "snowpack",
+    "env",
+    "environment",
+    "json",
+    "TypeScript"
+  ],
+  "author": {
+    "name": "Paul Gerarts",
+    "email": "dev@gerarts.nl"
+  },
+  "contributors": [
+    {
+      "name": "Paul Gerarts",
+      "email": "dev@gerarts.nl"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/weavedev/jit-env-snowpack-plugin/issues"
+  },
+  "homepage": "https://github.com/weavedev/jit-env-snowpack-plugin#readme",
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "chokidar": "^3.0.0"
+  }
+}
