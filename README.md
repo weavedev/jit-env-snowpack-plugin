@@ -230,10 +230,10 @@ export default {
 export REPLACE_CONFIG=/path/to/config.env.json
 
 # Load env file contents
-CONFIG=$(cat $REPLACE_CONFIG | tr -d '\n' | tr -d '\r' | sed 's/"/\\"/g' | sed "s/\//\\\\\//g");
+CONFIG=$(cat $REPLACE_CONFIG | tr -d '\n' | tr -d '\r' | sed 's/"/\\"/g' | sed "s/\//\\\\\//g | base64");
 
 # Inject env file contents into your index.html
-sed -i "s/\"___INJECT_ENV___\"/$CONFIG/g" /path/to/index.html;
+sed -i "s/___INJECT_ENV___/$CONFIG/g" /path/to/index.html;
 ```
 
 We use a Dockerfile that mounts a JSON file and uses a script with the above as entrypoint to handle this step.
