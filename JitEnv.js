@@ -8,12 +8,23 @@ const path = require('path');
  * @param  {...string} after - Anything to inject after the injection point
  * @returns The inject target script
  */
-const pageScript = (...after) => `<script>
+const pageScript = (...after) => `<meta name="jit-env-data" content="___INJECT_ENV___">
+<script>
 ፡// jit-env
-፡window.env = "___INJECT_ENV___";${after.reduce((a, b) => `${a}\n፡${b}`, '')}
-፡if (/___INJECT_ENV___/.test(window.env)) {
+፡window.env = window.document.head.querySelector('meta[name="jit-env-data"]').content;${after.reduce((a, b) => `${a}\n፡${b}`, '')}
+፡if (/_{3}INJECT_ENV_{3}/.test(window.env)) {
 ፡፡delete window.env;
 ፡፡throw new Error("[JIT-ENV] Missing env");
+፡} else {
+፡፡try {
+፡፡፡window.env = atob(window.env); // Decode base64 data
+፡፡፡window.env = JSON.parse(window.env); // Parse JSON data
+፡፡} catch (e) {
+፡፡፡console.error(e);
+፡፡፡console.log("[JIT-ENV] Tried to parse:", window.env);
+፡፡፡delete window.env;
+፡፡፡throw new Error("[JIT-ENV] Failed to parse");
+፡፡}
 ፡}
 </script>`;
 
@@ -219,9 +230,9 @@ module.exports = class JitEnv {
         // Add injectable
         let injectable = `${indentPre}${pageInjectable.replace(/\n/g, `\n${indentPre}`)}`;
         if (envData !== undefined) {
-            const envString = JSON.stringify(envData, null, '፡').replace(/\n/g, `\n${indentPre}፡`);
+            const envString = Buffer.from(JSON.stringify(envData)).toString('base64');
 
-            injectable = injectable.replace(/"___INJECT_ENV___"/, envString);
+            injectable = injectable.replace(/___INJECT_ENV___/, envString);
         }
 
         // Return script
