@@ -58,6 +58,7 @@ declare global {
  * @property {string} [userEnv] the user's env path
  * @property {string} [emitTypes] emit a TypeScript types file based on defaultEnv
  * @property {string} [emitTypesPrefix] add something to the beginning of the emitTypes file (usefull to disable linters etc.)
+ * @property {boolean} [emitTypesNonOptional] emit the types as non-optional type definitions (i.e. instead of prop?: Type, we emit prop: Type)
  */
 
 module.exports = class JitEnv {
@@ -66,11 +67,13 @@ module.exports = class JitEnv {
     userEnv = undefined;
     emitTypes = undefined;
     emitTypesPrefix = undefined;
+    emitTypesNonOptional = undefined;
 
     // Raw user options (for logging)
     _defaultEnv = undefined;
     _userEnv = undefined;
     _emitTypes = undefined;
+    _emitTypesNonOptional = undefined;
 
     // File watchers
     watching = new Map();
@@ -87,12 +90,14 @@ module.exports = class JitEnv {
         this._defaultEnv = options.defaultEnv;
         this._userEnv = options.userEnv;
         this._emitTypes = options.emitTypes;
+        this._emitTypesNonOptional = options.emitTypesNonOptional;
 
         // Save instance options
         this.defaultEnv = JitEnv.fullPath(options.defaultEnv);
         this.userEnv = JitEnv.fullPath(options.userEnv);
         this.emitTypes = JitEnv.fullPath(options.emitTypes);
         this.emitTypesPrefix = options.emitTypesPrefix;
+        this.emitTypesNonOptional = !!this._emitTypesNonOptional;
 
         // Ensure update hook
         if (typeof requestUpdate !== 'function') {
@@ -323,7 +328,7 @@ module.exports = class JitEnv {
                 return '{}';
             }
 
-            return '{\n' + Object.keys(o).map((k) => `  "${k}"?: ${this.typeObjToTypedef(o[k]).replace(/\n/g, '\n  ')}`).join(';\n') + ';\n}';
+            return '{\n' + Object.keys(o).map((k) => `  "${k}"${this.emitTypesNonOptional ? '' : '?'}: ${this.typeObjToTypedef(o[k]).replace(/\n/g, '\n  ')}`).join(';\n') + ';\n}';
         }
 
         throw new Error(`Unexpected typeof typeObj: ${typeof o}`);
